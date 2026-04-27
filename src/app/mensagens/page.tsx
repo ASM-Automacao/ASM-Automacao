@@ -30,10 +30,11 @@ export default async function MensagensPage() {
         <h2 className="text-lg font-semibold">Mensagens enviadas</h2>
         <p className="text-sm text-slate-500">Histórico registrado no banco (Meta ou mock técnico).</p>
         <p className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs text-slate-700 leading-relaxed">
-          <strong>meta_sent</strong> = a Meta aceitou o envio na API (como no JSON com <code className="rounded bg-white px-1">accepted</code>).{" "}
-          <strong>sent</strong> / <strong>delivered</strong> / <strong>read</strong> / <strong>failed</strong> vêm do{" "}
-          <strong>webhook</strong> quando ele está configurado na URL pública do app. Se ficar sempre em{" "}
-          <strong>meta_sent</strong>, confira o webhook na Meta e o campo <strong>messages</strong>.
+          <strong>meta_sent</strong> = a Meta aceitou o envio na API (como no JSON com <code className="rounded bg-white px-1">accepted</code>). Isso{" "}
+          <em>não</em> garante que o WhatsApp do celular já mostrou — a bolha aparece na conversa com o <strong>número de teste da empresa</strong> (+1 555… no painel Meta), não em outro chat.
+          <br />
+          <strong>sent</strong> / <strong>delivered</strong> / <strong>read</strong> / <strong>failed</strong> vêm do <strong>webhook</strong> (URL pública + campo{" "}
+          <strong>messages</strong>). Se ficar sempre em <strong>meta_sent</strong>, o webhook não está atualizando (URL/token na Meta) ou a Meta ainda não enviou o evento.
         </p>
 
         {error ? (

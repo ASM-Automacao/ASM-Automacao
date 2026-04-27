@@ -28,9 +28,10 @@ const META_OUTBOUND_STATUSES = new Set(["sent", "delivered", "read", "failed"]);
 export async function processMetaWebhookPayload(
   supabase: SupabaseClient,
   payload: unknown
-): Promise<{ inbound: number; statuses: number; statusEvents: WebhookStatusEvent[] }> {
+): Promise<{ inbound: number; statuses: number; statusEvents: WebhookStatusEvent[]; deliveryStatusNoDbRow: number }> {
   let inbound = 0;
   let statuses = 0;
+  let deliveryStatusNoDbRow = 0;
   const statusEvents: WebhookStatusEvent[] = [];
   const maxEvents = 25;
 
@@ -126,22 +127,44 @@ export async function processMetaWebhookPayload(
           }
         }
 
-        await supabase
+        const { data: updatedRows, error: updateErr } = await supabase
           .from("outbound_messages")
           .update({
             status: mapped,
             error_message: err,
             raw_response: s as unknown as Record<string, unknown>,
           })
-          .eq("provider_message_id", providerMessageId);
+          .eq("provider_message_id", providerMessageId)
+          .select("id");
+
+        if (updateErr) {
+          if (statusEvents.length < maxEvents) {
+            statusEvents.push({
+              providerMessageId,
+              status: `${status}_db_error`,
+              error: updateErr.message,
+              skipped: false,
+            });
+          }
+        } else if (!updatedRows?.length) {
+          deliveryStatusNoDbRow += 1;
+          if (statusEvents.length < maxEvents) {
+            statusEvents.push({
+              providerMessageId,
+              status: `${status}_no_row`,
+              error: "Webhook recebeu status mas não há outbound_messages com este wamid.",
+              skipped: false,
+            });
+          }
+        }
 
         statuses += 1;
-        if (statusEvents.length < maxEvents) {
+        if (statusEvents.length < maxEvents && updateErr === null && updatedRows?.length) {
           statusEvents.push({ providerMessageId, status, error: err, skipped: false });
         }
       }
     }
   }
 
-  return { inbound, statuses, statusEvents };
+  return { inbound, statuses, statusEvents, deliveryStatusNoDbRow };
 }

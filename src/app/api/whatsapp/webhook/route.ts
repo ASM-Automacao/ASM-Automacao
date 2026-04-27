@@ -31,6 +31,13 @@ export async function POST(request: Request) {
 
     const summary = await processMetaWebhookPayload(supabase, body);
 
+    if (summary.deliveryStatusNoDbRow > 0) {
+      console.warn(
+        "[whatsapp webhook] status recebido(s) sem linha em outbound_messages (wamid não bateu). Verifique se o envio foi gravado com o mesmo provider_message_id.",
+        { count: summary.deliveryStatusNoDbRow }
+      );
+    }
+
     if (process.env.NODE_ENV === "development") {
       const { statusEvents, ...rest } = summary;
       console.info("[whatsapp webhook]", rest, statusEvents.length ? { statusEvents } : {});
@@ -39,7 +46,12 @@ export async function POST(request: Request) {
     const payload =
       process.env.NODE_ENV === "development"
         ? { received: true, ...summary }
-        : { received: true, inbound: summary.inbound, statuses: summary.statuses };
+        : {
+            received: true,
+            inbound: summary.inbound,
+            statuses: summary.statuses,
+            deliveryStatusNoDbRow: summary.deliveryStatusNoDbRow,
+          };
 
     return NextResponse.json(payload);
   } catch {
