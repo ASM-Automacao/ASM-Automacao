@@ -100,6 +100,13 @@ npm run lint
 npm run build
 ```
 
+**Ver resposta JSON da Meta no terminal** (mesmo pedido do painel “Enviar mensagem”):
+
+```bash
+node --env-file=.env.local scripts/whatsapp-graph-hello.mjs 5522997084112
+node --env-file=.env.local scripts/whatsapp-graph-hello.mjs 5522997084112 pt_BR
+```
+
 ## Rotas úteis da API
 
 | Método | Rota | Descrição |
