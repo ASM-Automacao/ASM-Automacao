@@ -29,6 +29,12 @@ export default async function MensagensPage() {
       <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
         <h2 className="text-lg font-semibold">Mensagens enviadas</h2>
         <p className="text-sm text-slate-500">Histórico registrado no banco (Meta ou mock técnico).</p>
+        <p className="mt-3 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs text-slate-700 leading-relaxed">
+          <strong>meta_sent</strong> = a Meta aceitou o envio na API (como no JSON com <code className="rounded bg-white px-1">accepted</code>).{" "}
+          <strong>sent</strong> / <strong>delivered</strong> / <strong>read</strong> / <strong>failed</strong> vêm do{" "}
+          <strong>webhook</strong> quando ele está configurado na URL pública do app. Se ficar sempre em{" "}
+          <strong>meta_sent</strong>, confira o webhook na Meta e o campo <strong>messages</strong>.
+        </p>
 
         {error ? (
           <p className="mt-4 rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-800">{error.message}</p>
@@ -50,6 +56,9 @@ export default async function MensagensPage() {
                     <Pill>{row.provider}</Pill>
                     <Pill tone="blue">{row.status}</Pill>
                   </div>
+                  {row.provider_message_id ? (
+                    <p className="mt-1 font-mono text-[10px] text-slate-500 break-all">id: {row.provider_message_id}</p>
+                  ) : null}
                   {row.error_message ? <p className="mt-2 text-xs text-red-700">{row.error_message}</p> : null}
                 </div>
               );
@@ -63,9 +72,10 @@ export default async function MensagensPage() {
               <div className="col-span-2">Data</div>
               <div className="col-span-2">Telefone</div>
               <div className="col-span-2">Cliente</div>
-              <div className="col-span-3">Mensagem</div>
+              <div className="col-span-2">Mensagem</div>
               <div className="col-span-1">Prov.</div>
-              <div className="col-span-2">Status</div>
+              <div className="col-span-1">Status</div>
+              <div className="col-span-2">wamid / erro</div>
             </div>
             {(data ?? []).map((row) => {
               const c = row.clients;
@@ -76,11 +86,14 @@ export default async function MensagensPage() {
                   <div className="col-span-2 text-xs text-slate-500">{new Date(row.created_at).toLocaleString("pt-BR")}</div>
                   <div className="col-span-2 font-mono text-xs">{row.phone}</div>
                   <div className="col-span-2 text-xs">{who}</div>
-                  <div className="col-span-3 line-clamp-3 text-xs text-slate-700">{row.body}</div>
+                  <div className="col-span-2 line-clamp-3 text-xs text-slate-700">{row.body}</div>
                   <div className="col-span-1 text-xs">{row.provider}</div>
-                  <div className="col-span-2 text-xs">
+                  <div className="col-span-1 text-xs">
                     <Pill tone="blue">{row.status}</Pill>
-                    {row.error_message ? <p className="mt-1 text-[10px] text-red-600">{row.error_message}</p> : null}
+                  </div>
+                  <div className="col-span-2 text-[10px] text-slate-600 break-all">
+                    {row.provider_message_id ? <span className="font-mono">{row.provider_message_id}</span> : "—"}
+                    {row.error_message ? <p className="mt-1 text-red-600">{row.error_message}</p> : null}
                   </div>
                 </div>
               );

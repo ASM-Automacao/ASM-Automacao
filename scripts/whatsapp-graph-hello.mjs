@@ -45,3 +45,8 @@ console.log("HTTP", res.status);
 console.log("URL (sem token):", url);
 console.log("to:", body.to, "| template: hello_world | lang:", lang);
 console.log(JSON.stringify(json, null, 2));
+const wamid = json?.messages?.[0]?.id;
+if (res.ok && wamid) {
+  console.log("\n→ Próximo passo: no app abra /mensagens e confira status (webhook atualiza para sent/delivered/failed).");
+  console.log("→ wamid:", wamid);
+}

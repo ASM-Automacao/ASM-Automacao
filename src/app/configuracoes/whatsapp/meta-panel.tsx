@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type Config = {
@@ -113,6 +114,13 @@ export function MetaWhatsAppPanel() {
         <p>
           <strong>Idioma do template:</strong> se <code className="rounded bg-amber-100/80 px-1">en_US</code> não entregar, tente{" "}
           <code className="rounded bg-amber-100/80 px-1">pt_BR</code> no seletor abaixo e envie de novo.
+        </p>
+        <p>
+          Depois de enviar, veja o histórico e o <strong>wamid</strong> em{" "}
+          <Link href="/mensagens" className="font-semibold text-amber-900 underline">
+            Mensagens
+          </Link>{" "}
+          (status muda quando o webhook da Meta estiver ativo).
         </p>
       </section>
 

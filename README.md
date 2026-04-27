@@ -76,7 +76,7 @@ A Meta **não** chama `http://localhost`. Escolha **uma** opção:
 1. Abra o chat com o **número de teste da empresa** (ex.: +1 555… no painel Meta), não com outro contato.  
 2. Confirme o número no campo da app: use só dígitos; `022…` é normalizado para `55…`.  
 3. No teste de template, tente **pt_BR** se **en_US** não entregar.  
-4. No Supabase, tabela **`outbound_messages`**: veja `status` (`delivered` / `failed`) e `error_message` após o webhook estar configurado.
+4. No app, página **`/mensagens`**, ou no Supabase (`outbound_messages`): veja `status` (`delivered` / `failed`) e `error_message` após o webhook estar configurado.
 
 ## GitHub e Vercel
 
@@ -106,6 +106,8 @@ npm run build
 node --env-file=.env.local scripts/whatsapp-graph-hello.mjs 5522997084112
 node --env-file=.env.local scripts/whatsapp-graph-hello.mjs 5522997084112 pt_BR
 ```
+
+Depois, no app, abra **`/mensagens`**: lá aparecem **status** (`meta_sent`, `delivered`, `failed`…) e o **wamid** quando o envio é registrado; com webhook ativo o status deixa de ficar só em `meta_sent`.
 
 ## Rotas úteis da API
 
