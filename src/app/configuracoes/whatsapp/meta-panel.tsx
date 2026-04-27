@@ -15,6 +15,7 @@ type Config = {
 export function MetaWhatsAppPanel() {
   const [cfg, setCfg] = useState<Config | null>(null);
   const [to, setTo] = useState("");
+  const [templateLang, setTemplateLang] = useState<"en_US" | "pt_BR">("en_US");
   const [textBody, setTextBody] = useState("Mensagem de teste — Central Comercial ASM");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -35,11 +36,15 @@ export function MetaWhatsAppPanel() {
       const res = await fetch("/api/whatsapp/test-template", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ to }),
+        body: JSON.stringify({ to, languageCode: templateLang }),
       });
       const j = await res.json();
       if (!res.ok) throw new Error(j.error ?? "Falha ao enviar template.");
-      setResult(`Template enviado. id: ${j.providerMessageId ?? "—"}`);
+      const norm = typeof j.to === "string" ? j.to : "";
+      const lang = typeof j.languageCode === "string" ? j.languageCode : templateLang;
+      setResult(
+        `Template enviado (${lang}). id: ${j.providerMessageId ?? "—"}${norm ? ` · número na API: ${norm}` : ""}. Abra o chat com o número de teste da empresa (Meta), não com outro contato.`,
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro");
     } finally {
@@ -98,8 +103,17 @@ export function MetaWhatsAppPanel() {
         )}
       </section>
 
-      <section className="rounded-3xl border border-amber-100 bg-amber-50 p-4 text-sm text-amber-950">
-        Enquanto estiver usando o número de teste da Meta, o destinatário precisa estar autorizado no painel Meta Developers.
+      <section className="rounded-3xl border border-amber-100 bg-amber-50 p-4 text-sm text-amber-950 space-y-2">
+        <p>
+          <strong>Onde a mensagem aparece:</strong> no WhatsApp do celular, na conversa com o{" "}
+          <strong>número de teste da empresa</strong> que a Meta mostra no painel (ex.: +1 555…),{" "}
+          <em>não</em> em “mensagens para você mesmo” nem em outro grupo.
+        </p>
+        <p>O destinatário precisa estar na lista de números de teste do app e, para texto livre, ter mandado mensagem para esse número da empresa antes.</p>
+        <p>
+          <strong>Idioma do template:</strong> se <code className="rounded bg-amber-100/80 px-1">en_US</code> não entregar, tente{" "}
+          <code className="rounded bg-amber-100/80 px-1">pt_BR</code> no seletor abaixo e envie de novo.
+        </p>
       </section>
 
       <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm">
@@ -114,6 +128,18 @@ export function MetaWhatsAppPanel() {
             className="mt-1 w-full rounded-2xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
             placeholder="5522999999999"
           />
+        </label>
+
+        <label className="mt-3 block text-sm font-medium text-slate-800">
+          Idioma do template hello_world
+          <select
+            value={templateLang}
+            onChange={(e) => setTemplateLang(e.target.value as "en_US" | "pt_BR")}
+            className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-emerald-500"
+          >
+            <option value="en_US">en_US (padrão Meta)</option>
+            <option value="pt_BR">pt_BR</option>
+          </select>
         </label>
 
         <button

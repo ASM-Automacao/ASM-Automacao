@@ -71,6 +71,13 @@ A Meta **não** chama `http://localhost`. Escolha **uma** opção:
 
 **Nota:** o **Insights** do Gerenciador do WhatsApp pode **atrasar** ou **não refletir** tráfego de **conta de teste**; para debug por mensagem use webhook + Supabase, não só o painel de métricas.
 
+**Mensagem “enviada” mas não aparece no celular**
+
+1. Abra o chat com o **número de teste da empresa** (ex.: +1 555… no painel Meta), não com outro contato.  
+2. Confirme o número no campo da app: use só dígitos; `022…` é normalizado para `55…`.  
+3. No teste de template, tente **pt_BR** se **en_US** não entregar.  
+4. No Supabase, tabela **`outbound_messages`**: veja `status` (`delivered` / `failed`) e `error_message` após o webhook estar configurado.
+
 ## GitHub e Vercel
 
 1. No GitHub: **Novo repositório** (pode ser vazio; branch `main`).  

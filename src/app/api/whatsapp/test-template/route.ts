@@ -10,6 +10,8 @@ import { isOutboundSendSuccess } from "@/lib/whatsapp/send-success";
 
 const bodySchema = z.object({
   to: z.string().min(8).max(32),
+  /** Idioma do template hello_world na Meta (sandbox costuma ter en_US; algumas contas usam pt_BR). */
+  languageCode: z.enum(["en_US", "pt_BR"]).optional().default("en_US"),
 });
 
 export async function POST(request: Request) {
@@ -21,11 +23,12 @@ export async function POST(request: Request) {
     }
 
     const to = normalizeBrazilPhone(parsed.data.to);
+    const languageCode = parsed.data.languageCode;
     const provider = createWhatsAppProvider();
     const result = await provider.sendTemplateMessage({
       to,
       templateName: "hello_world",
-      languageCode: "en_US",
+      languageCode,
     });
 
     const supabase = createAdminClient();
@@ -54,6 +57,8 @@ export async function POST(request: Request) {
         {
           success: false,
           error: extractMetaErrorMessage(result.raw) ?? "Falha ao enviar template.",
+          to,
+          languageCode,
         },
         { status: 502 }
       );
@@ -63,6 +68,8 @@ export async function POST(request: Request) {
       success: true,
       providerMessageId: result.providerMessageId,
       status: outboundStatus,
+      to,
+      languageCode,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erro inesperado.";
