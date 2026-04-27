@@ -71,6 +71,19 @@ A Meta **não** chama `http://localhost`. Escolha **uma** opção:
 
 **Nota:** o **Insights** do Gerenciador do WhatsApp pode **atrasar** ou **não refletir** tráfego de **conta de teste**; para debug por mensagem use webhook + Supabase, não só o painel de métricas.
 
+## GitHub e Vercel
+
+1. No GitHub: **Novo repositório** (pode ser vazio; branch `main`).  
+2. Na pasta do projeto:
+
+```bash
+git remote add origin https://github.com/SEU_USUARIO/SEU_REPO.git
+git push -u origin main
+```
+
+3. **Quando aparecer pedido de login do GitHub:** use o **Git Credential Manager** (Windows costuma abrir o navegador) ou um **Personal Access Token (classic)** com escopo `repo` no lugar da senha, se o Git pedir usuário/senha no terminal.  
+4. Na **Vercel**: Importar o repositório → framework **Next.js** → em **Environment Variables** cadastre as mesmas chaves do `.env.example` / do seu `.env.local` (nunca commite `.env.local`).
+
 ## Scripts
 
 ```bash
